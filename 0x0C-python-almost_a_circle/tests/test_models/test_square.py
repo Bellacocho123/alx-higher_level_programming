@@ -1,88 +1,78 @@
 #!/usr/bin/python3
-""" written tests for Square subclass """
-import io
-import sys
-import unittest
+"""Test cases for square module"""""
 
-from models.base import Base
+
+import unittest
 from models.rectangle import Rectangle
 from models.square import Square
 
 
-class Test_Square(unittest.TestCase):
-    """
-    test cases for square
-    """
+class SquareTest(unittest.TestCase):
+    """ Test cases for square module"""
 
-    def test_square(self):
-        """ test square method """
-        s1 = Square(5)
-        self.assertEqual(s1.id, 7)
+    def test_doc(self):
+        """Test documentation"""
+        self.assertIsNotNone(Square.__doc__)
+        self.assertIsNotNone(Square.__init__.__doc__)
 
-        s2 = Square(2, 2)
+    def test_doc_length(self):
+        """ Doc length """
+        self.assertGreater(len(Square.__doc__), 1)
+        self.assertGreater(len(Square.__init__.__doc__), 1)
 
-    def test_square_area(self):
-        """ testing the return of Area """
-        s3 = Square(3, 1, 3)
-        self.assertEqual(s3.area(), 9)
+    def test_square_instance(self):
+        """Test Square is a subclass of Rectangle class"""
+        self.assertTrue(isinstance(Square(1), Rectangle))
 
-        """ self.assertEqual(print(s3), '[Square] (3) 1/3 - 3') """
+    def test_square_instance_base(self):
+        """Test Square is a subclass of Base class"""
+        self.assertTrue(issubclass(Square, Rectangle))
 
-    def test_attributes(self):
-        """ Test attribute types and default values """
-        s = Square(5, 2, 3, 1)
-        self.assertIsInstance(s.size, int)
-        self.assertIsInstance(s.x, int)
-        self.assertIsInstance(s.y, int)
-        self.assertIsInstance(s.id, int)
-        self.assertEqual(s.size, 5)
-        self.assertEqual(s.x, 2)
-        self.assertEqual(s.y, 3)
-        self.assertIsNotNone(s.id)
-
-    def test_invalid_size(self):
-        """ Test invalid size value """
-        with self.assertRaises(ValueError):
-            Square(-5, 2, 3, 1)
+    def test_square_attributes(self):
+        """Test Square attributes"""
+        s1 = Square(1)
+        self.assertTrue(hasattr(s1, "id"))
+        self.assertTrue(hasattr(s1, "size"))
+        self.assertTrue(hasattr(s1, "x"))
+        self.assertTrue(hasattr(s1, "y"))
 
     def test_str_method(self):
-        """ Test the __str__ method """
-        s = Square(5, 2, 3, 1)
-        expected_output = "[Square] (1) 2/3 - 5"
-        self.assertEqual(str(s), expected_output)
+        """Test __str__ method"""
+        s1 = Square(1, 2, 3, 4)
+        self.assertEqual(s1.__str__(), "[Square] (4) 2/3 - 1")
 
-    def test_size_property(self):
-        """ Test the size property """
-        s = Square(5, 2, 3, 1)
-        self.assertEqual(s.size, 5)
-        s.size = 8
-        self.assertEqual(s.size, 8)
-
-    def test_update_method(self):
-        """ Test the update method """
-        s = Square(5, 2, 3, 1)
-        s.update(2, 8, 4, 6)
-        self.assertEqual(s.size, 8)
-        self.assertEqual(s.x, 4)
-        self.assertEqual(s.y, 6)
-        self.assertEqual(s.id, 2)
-
-    def test_to_dictionary_method(self):
-        """ Test the to_dictionary method """
-        s = Square(5, 2, 3, 1)
-        expected_dict = {'id': 1, 'size': 5, 'x': 2, 'y': 3}
-        self.assertDictEqual(s.to_dictionary(), expected_dict)
-
-    def test_update_method_invalid_arguments(self):
-        """ Test the update method with invalid arguments """
-        s = Square(5, 2, 3, 1)
+    def test_size(self):
+        """Test size setter and getter"""
+        s1 = Square(1)
+        s1.size = 2
+        self.assertEqual(s1.size, 2)
+        with self.assertRaises(TypeError):
+            s1.size = "2"
         with self.assertRaises(ValueError):
-            s.update(2, -8, 4, 6)
+            s1.size = -10
 
-    def test_update_method_keyword_arguments(self):
-        """ Test the update method with keyword arguments """
-        s = Square(5, 2, 3, 1)
-        s.update(size=8, x=4, y=6)
-        self.assertEqual(s.size, 8)
-        self.assertEqual(s.x, 4)
-        self.assertEqual(s.y, 6)
+    def test_update(self):
+        """Test update method"""
+        s1 = Square(1, 2, 3, 4)
+        s1.update(10, 20, 30, 40)
+        self.assertEqual(s1.__str__(), "[Square] (10) 30/40 - 20")
+        s1.update(1, 2, 3, 4, 5, 6, 7, 8)
+        self.assertEqual(s1.__str__(), "[Square] (1) 3/4 - 2")
+        s1.update(id=10, size=20, x=30, y=40)
+        self.assertEqual(s1.__str__(), "[Square] (10) 30/40 - 20")
+
+    def test_to_dictionary(self):
+        """Test to_dictionary method"""
+        s1 = Square(1, 2, 3, 4)
+        s1_dictionary = s1.to_dictionary()
+        self.assertEqual(s1_dictionary, {'x': 2, 'y': 3, 'id': 4, 'size': 1})
+        self.assertTrue(type(s1_dictionary) is dict)
+        s2 = Square(1, 1)
+        s2.update(**s1_dictionary)
+        self.assertEqual(s1.__str__(), s2.__str__())
+        self.assertNotEqual(s1, s2)
+        self.assertFalse(s1 is s2)
+
+
+if __name__ == "__main__":
+    unittest.main()
